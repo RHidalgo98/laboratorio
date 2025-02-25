@@ -1,0 +1,477 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS analisislaboratorio;
+USE analisislaboratorio;
+
+-- Crear tabla tiempo
+CREATE TABLE tiempo (
+    idTiempo INT PRIMARY KEY,
+    periodo VARCHAR(100),
+    dia DATE,
+    turno VARCHAR(100)
+);
+
+-- Crear tabla jugos
+CREATE TABLE jugos (
+    idJugos INT PRIMARY KEY,
+    idJugoPrimario INT,
+    idJugoClarificado INT,
+    idJugoMezclado INT,
+    idJugoFiltrado INT,
+    idJugoResidual INT
+);
+
+-- Crear tabla jugoPrimario
+CREATE TABLE jugoPrimario (
+    idJugoPrimario INT PRIMARY KEY,
+    hora TIME,
+    observacion VARCHAR(100),
+    brix DECIMAL(5,2),
+    sac DECIMAL(5,2),
+    pureza DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    mlGastado DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla jugoClarificado
+CREATE TABLE jugoClarificado (
+    idJugoClarificado INT PRIMARY KEY,
+    hora TIME,
+    observacion VARCHAR(100),
+    color DECIMAL(5,2),
+    brix DECIMAL(5,2),
+    sac DECIMAL(5,2),
+    pureza DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    mlGastado DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla jugoMezclado
+CREATE TABLE jugoMezclado (
+    idJugoMezclado INT PRIMARY KEY,
+    hora TIME,
+    observacion VARCHAR(100),
+    fosfatos DECIMAL(5,2),
+    brix DECIMAL(5,2),
+    sac DECIMAL(5,2),
+    pureza DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    mlGastado DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla jugoFiltrado
+CREATE TABLE jugoFiltrado (
+    idJugoFiltrado INT PRIMARY KEY,
+    hora TIME,
+    observacion VARCHAR(100),
+    brix DECIMAL(5,2),
+    sac DECIMAL(5,2),
+    pureza DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    mlGastado DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla jugoResidual
+CREATE TABLE jugoResidual (
+    idJugoResidual INT PRIMARY KEY,
+    hora TIME,
+    observacion VARCHAR(100),
+    brix DECIMAL(5,2),
+    sac DECIMAL(5,2),
+    pureza DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    mlGastado DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla meladura
+CREATE TABLE meladura (
+    idMeladura INT PRIMARY KEY,
+    hora TIME,
+    observacion VARCHAR(100),
+    color DECIMAL(5,2),
+    brix DECIMAL(5,2),
+    sac DECIMAL(5,2),
+    pureza DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    mlGastado DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla analisisJugosMeladura
+CREATE TABLE analisisJugosMeladura (
+    idAnalisisJugosMeladura INT PRIMARY KEY,
+    idTiempo INT,
+    idJugos INT,
+    idMeladura INT,
+    FOREIGN KEY (idTiempo) REFERENCES tiempo(idTiempo),
+    FOREIGN KEY (idJugos) REFERENCES jugos(idJugos),
+    FOREIGN KEY (idMeladura) REFERENCES meladura(idMeladura)
+);
+
+-- Crear tabla masas
+CREATE TABLE masa (
+    idMasa INT PRIMARY KEY,
+    idMasaCocidaA INT,
+    idMasaCocidaB INT,
+    idMasaCocidaC INT
+);
+
+-- Crear tabla masaCocidaA
+CREATE TABLE masaCocidaA (
+    idMasaCocidaA INT PRIMARY KEY,
+    num DECIMAL(5,2),
+    hora TIME,
+    tacho DECIMAL(5,2),
+    cristaliz DECIMAL(5,2),
+    volFt3 DECIMAL(5,2),  -- corregido nombre del campo
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    pur DECIMAL(5,2),
+    rendCristal DECIMAL(5,2),
+    tnMasa DECIMAL(5,2),  -- corregido nombre del campo
+    tnM3 DECIMAL(5,2),    -- corregido nombre del campo
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla masaCocidaB
+CREATE TABLE masaCocidaB (
+    idMasaCocidaB INT PRIMARY KEY,
+    num DECIMAL(5,2),
+    hora TIME,
+    tacho DECIMAL(5,2),
+    cristaliz DECIMAL(5,2),
+    volFt3 DECIMAL(5,2),
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    pur DECIMAL(5,2),
+    rendCristal DECIMAL(5,2),
+    tnMasa DECIMAL(5,2),
+    tnM3 DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla masaCocidaC
+CREATE TABLE masaCocidaC (
+    idMasaCocidaC INT PRIMARY KEY,
+    num DECIMAL(5,2),
+    hora TIME,
+    tacho DECIMAL(5,2),
+    cristaliz DECIMAL(5,2),
+    volFt3 DECIMAL(5,2),
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    pur DECIMAL(5,2),
+    rendCristal DECIMAL(5,2),
+    tnMasa DECIMAL(5,2),
+    tnM3 DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla miel
+CREATE TABLE miel (
+    idMiel INT PRIMARY KEY,
+    idMielA INT,
+    idMielB INT,
+    idMielC INT
+);
+
+-- Crear tabla mielA
+CREATE TABLE mielA (
+    idMielA INT PRIMARY KEY,
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    purezaMiel DECIMAL(5,2),
+    agotam DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla mielB
+CREATE TABLE mielB (
+    idMielB INT PRIMARY KEY,
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    purezaMiel DECIMAL(5,2),
+    agotam DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla mielC
+CREATE TABLE mielC (
+    idMielC INT PRIMARY KEY,
+    hora TIME,
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    purezaMiel DECIMAL(5,2),
+    azucRed DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla analisisAzucar
+CREATE TABLE analisisAzucar (
+    idAnalisisAzucar INT PRIMARY KEY,
+    hora TIME,
+    templa DECIMAL(5,2),
+    color DECIMAL(5,2),
+    turbidez DECIMAL(5,2),
+    vitaminaA DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    humedad DECIMAL(5,2),
+    cenizas DECIMAL(5,2),
+    particulasFe DECIMAL(5,2)
+);
+
+-- Crear tabla efluentes
+CREATE TABLE efluentes (
+    idEfluentes INT PRIMARY KEY,
+    hora TIME,
+    enfriamiento DECIMAL(5,2),
+    retorno DECIMAL(5,2),
+    desechos DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla magma
+CREATE TABLE magma (
+    idMagma INT PRIMARY KEY,
+    idMagmaB INT,
+    idMagmaC INT
+);
+
+-- Crear tabla magmaB
+CREATE TABLE magmaB (
+    idMagmaB INT PRIMARY KEY,
+    hora TIME,
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    purezaMagma DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla magmaC
+CREATE TABLE magmaC (
+    idMagmaC INT PRIMARY KEY,
+    hora TIME,
+    brix DECIMAL(5,2),
+    pol DECIMAL(5,2),
+    purezaMagma DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla concepto
+CREATE TABLE concepto (
+    idConcepto INT PRIMARY KEY,
+    detalleConcepto VARCHAR(100),
+    turnos VARCHAR(100),
+    total DECIMAL(5,2)
+);
+
+-- Crear tabla observaciones
+CREATE TABLE observaciones (
+    idObservacion INT PRIMARY KEY,
+    detalleObservacion VARCHAR(100)
+);
+
+-- Crear tabla lecturas
+CREATE TABLE lecturas (
+    idLectura INT PRIMARY KEY,
+    conceptoLectura VARCHAR(100),
+    turnos VARCHAR(100),
+    total DECIMAL(5,2),
+    energiaGenerada DECIMAL(5,2),
+    energiaComprada DECIMAL(5,2)
+);
+
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoPrimario FOREIGN KEY (idJugoPrimario) REFERENCES jugoPrimario(idJugoPrimario);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoClarificado FOREIGN KEY (idJugoClarificado) REFERENCES jugoClarificado(idJugoClarificado);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoMezclado FOREIGN KEY (idJugoMezclado) REFERENCES jugoMezclado(idJugoMezclado);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoFiltrado FOREIGN KEY (idJugoFiltrado) REFERENCES jugoFiltrado(idJugoFiltrado);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoResidual FOREIGN KEY (idJugoResidual) REFERENCES jugoResidual(idJugoResidual);
+ALTER TABLE masa ADD CONSTRAINT FK_masaCocidaA FOREIGN KEY (idMasaCocidaA) REFERENCES masaCocidaA(idMasaCocidaA);
+ALTER TABLE masa ADD CONSTRAINT FK_masaCocidaB FOREIGN KEY (idMasaCocidaB) REFERENCES masaCocidaB(idMasaCocidaB);
+ALTER TABLE masa ADD CONSTRAINT FK_masaCocidaC FOREIGN KEY (idMasaCocidaC) REFERENCES masaCocidaC(idMasaCocidaC);
+ALTER TABLE miel ADD CONSTRAINT FK_mielA FOREIGN KEY (idMielA) REFERENCES mielA(idMielA);
+ALTER TABLE miel ADD CONSTRAINT FK_mielB FOREIGN KEY (idMielB) REFERENCES mielB(idMielB);
+ALTER TABLE miel ADD CONSTRAINT FK_mielC FOREIGN KEY (idMielC) REFERENCES mielC(idMielC);
+ALTER TABLE magma ADD CONSTRAINT FK_magmaB FOREIGN KEY (idMagmaB) REFERENCES magmaB(idMagmaB);
+ALTER TABLE magma ADD CONSTRAINT FK_magmaC FOREIGN KEY (idMagmaC) REFERENCES magmaC(idMagmaC);
+
+-- Crear tabla analisisMasasMieles
+CREATE TABLE analisisMasasMieles (
+    idAnalisisMasasMieles INT PRIMARY KEY,
+    idTiempo INT,
+    idMasa INT,
+    idMiel INT,
+    idAnalisisAzucar INT,
+    idEfluentes INT,
+    idMagma INT,
+    idConcepto INT,
+    idObservacion INT,
+    idLectura INT,
+    FOREIGN KEY (idTiempo) REFERENCES tiempo(idTiempo),
+    FOREIGN KEY (idMasa) REFERENCES masa(idMasa),
+    FOREIGN KEY (idMiel) REFERENCES miel(idMiel),
+    FOREIGN KEY (idAnalisisAzucar) REFERENCES analisisAzucar(idAnalisisAzucar),
+    FOREIGN KEY (idEfluentes) REFERENCES efluentes(idEfluentes),
+    FOREIGN KEY (idMagma) REFERENCES magma(idMagma),
+    FOREIGN KEY (idConcepto) REFERENCES concepto(idConcepto),
+    FOREIGN KEY (idObservacion) REFERENCES observaciones(idObservacion),
+    FOREIGN KEY (idLectura) REFERENCES lecturas(idLectura)
+);
+
+-- Crear tabla analisispHMolinosBagazoCachaza
+CREATE TABLE analisispHMolinosBagazoCachaza (
+    idpHMolinosBagazoCachaza INT PRIMARY KEY,
+    idTiempo INT,
+    idControlpH INT,
+    idAguaImbicion INT,
+    idJugoMezcladopHMolinosBagazoCachaza INT,
+    idBagazo INT,
+    idFiltroCachaza1 INT,
+    idFiltroCachaza2 INT,
+    idFiltroCachaza3 INT,
+    idCachaza INT,
+    idCausa INT,
+    FOREIGN KEY (idTiempo) REFERENCES tiempo(idTiempo),
+    FOREIGN KEY (idControlpH) REFERENCES controlpH(idControlpH),
+    FOREIGN KEY (idAguaImbicion) REFERENCES aguaImbicion(idAguaImbicion),
+    FOREIGN KEY (idJugoMezcladopHMolinosBagazoCachaza) REFERENCES jugoMezclado(idJugoMezclado),
+    FOREIGN KEY (idBagazo) REFERENCES bagazo(idBagazo),
+    FOREIGN KEY (idFiltroCachaza1) REFERENCES filtroCachaza1(idFiltroCachaza1),
+    FOREIGN KEY (idFiltroCachaza2) REFERENCES filtroCachaza2(idFiltroCachaza2),
+    FOREIGN KEY (idFiltroCachaza3) REFERENCES filtroCachaza3(idFiltroCachaza3),
+    FOREIGN KEY (idCachaza) REFERENCES cachaza(idCachaza),
+    FOREIGN KEY (idCausa) REFERENCES causas(idCausa)
+);
+
+-- Crear tabla controlpH
+CREATE TABLE controlpH (
+    idControlpH INT PRIMARY KEY,
+    hora TIME,
+    primario DECIMAL(5,2),
+    mezclado DECIMAL(5,2),
+    residual DECIMAL(5,2),
+    sulfitado DECIMAL(5,2),
+    filtrado DECIMAL(5,2),
+    alcalizado DECIMAL(5,2),
+    clarificado DECIMAL(5,2),
+    meladura DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla aguaImbicion
+CREATE TABLE aguaImbicion (
+    idAguaImbicion INT PRIMARY KEY,
+    marcador DECIMAL(5,2),
+    totalizador DECIMAL(5,2),
+    tnHora DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla bagazo
+CREATE TABLE bagazo (
+    idBagazo INT PRIMARY KEY,
+    pol DECIMAL(5,2),
+    humedad DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla filtroCachaza1
+CREATE TABLE filtroCachaza1 (
+    idFiltroCachaza1 INT PRIMARY KEY,
+    pol DECIMAL(5,2),
+    gFt2 DECIMAL(5,2),
+    promedio DECIMAL(5,2),
+    promPolCachaza DECIMAL(5,2)
+);
+
+-- Crear tabla filtroCachaza2
+CREATE TABLE filtroCachaza2 (
+    idFiltroCachaza2 INT PRIMARY KEY,
+    pol DECIMAL(5,2),
+    gFt2 DECIMAL(5,2),
+    promedio DECIMAL(5,2),
+    promPolCachaza DECIMAL(5,2)
+);
+
+-- Crear tabla filtroCachaza3
+CREATE TABLE filtroCachaza3 (
+    idFiltroCachaza3 INT PRIMARY KEY,
+    pol DECIMAL(5,2),
+    gFt2 DECIMAL(5,2),
+    promedio DECIMAL(5,2),
+    promPolCachaza DECIMAL(5,2)
+);
+
+-- Crear tabla cachaza
+CREATE TABLE cachaza (
+    idCachaza INT PRIMARY KEY,
+    humedad DECIMAL(5,2),
+    fibra DECIMAL(5,2),
+    promedio DECIMAL(5,2)
+);
+
+-- Crear tabla causas
+CREATE TABLE causas (
+    idCausa INT PRIMARY KEY,
+    paro TIME,
+    arranque TIME,
+    tiempoPerdido TIME,
+    motivo VARCHAR(100),
+    totalTiempoPerdido TIME,
+    turnos VARCHAR(100)
+);
+
+-- Asegurarse de que todas las tablas están correctamente relacionadas
+-- Comprobar que no falten claves foráneas que aseguren la integridad referencial
+
+-- Por ejemplo, añadir claves foráneas faltantes para conexiones completas
+
+-- Relación para masa y sus subtipos Cocida A, B, y C
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoPrimario FOREIGN KEY (idJugoPrimario) REFERENCES jugoPrimario(idJugoPrimario);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoClarificado FOREIGN KEY (idJugoClarificado) REFERENCES jugoClarificado(idJugoClarificado);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoMezclado FOREIGN KEY (idJugoMezclado) REFERENCES jugoMezclado(idJugoMezclado);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoFiltrado FOREIGN KEY (idJugoFiltrado) REFERENCES jugoFiltrado(idJugoFiltrado);
+ALTER TABLE jugos ADD CONSTRAINT FK_jugoResidual FOREIGN KEY (idJugoResidual) REFERENCES jugoResidual(idJugoResidual);
+
+-- Asegurar las relaciones entre las tablas de masa cocida y la tabla principal de masas
+ALTER TABLE masa ADD CONSTRAINT FK_masaCocidaA FOREIGN KEY (idMasaCocidaA) REFERENCES masaCocidaA(idMasaCocidaA);
+ALTER TABLE masa ADD CONSTRAINT FK_masaCocidaB FOREIGN KEY (idMasaCocidaB) REFERENCES masaCocidaB(idMasaCocidaB);
+ALTER TABLE masa ADD CONSTRAINT FK_masaCocidaC FOREIGN KEY (idMasaCocidaC) REFERENCES masaCocidaC(idMasaCocidaC);
+
+-- Relaciones de la tabla miel con sus subtipos
+ALTER TABLE miel ADD CONSTRAINT FK_mielA FOREIGN KEY (idMielA) REFERENCES mielA(idMielA);
+ALTER TABLE miel ADD CONSTRAINT FK_mielB FOREIGN KEY (idMielB) REFERENCES mielB(idMielB);
+ALTER TABLE miel ADD CONSTRAINT FK_mielC FOREIGN KEY (idMielC) REFERENCES mielC(idMielC);
+
+-- Asegurar las relaciones en la tabla magma
+ALTER TABLE magma ADD CONSTRAINT FK_magmaB FOREIGN KEY (idMagmaB) REFERENCES magmaB(idMagmaB);
+ALTER TABLE magma ADD CONSTRAINT FK_magmaC FOREIGN KEY (idMagmaC) REFERENCES magmaC(idMagmaC);
+
+-- Por ejemplo, añadir índices para mejorar la búsqueda y la recuperación de datos
+CREATE INDEX idx_hora ON jugoPrimario(hora);
+CREATE INDEX idx_color ON jugoClarificado(color);
+CREATE INDEX idx_fosfatos ON jugoMezclado(fosfatos);
+
+-- Crear tabla para logging
+CREATE TABLE logChanges (
+    idLog INT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255),
+    changeDate DATETIME
+);
+
+-- Crear la tabla analisisCedulaCaptura
+CREATE TABLE analisisCedulaCaptura (
+    idTiempo INT,
+    idAnalisisJugosMeladura INT,
+    idAnalisisMasasMieles INT,
+    idAnalisispHMolinosBagazoCachaza INT,
+    PRIMARY KEY (idTiempo, idAnalisisJugosMeladura, idAnalisisMasasMieles, idAnalisispHMolinosBagazoCachaza),
+    FOREIGN KEY (idTiempo) REFERENCES tiempo(idTiempo),
+    FOREIGN KEY (idAnalisisJugosMeladura) REFERENCES analisisJugosMeladura(idAnalisisJugosMeladura),
+    FOREIGN KEY (idAnalisisMasasMieles) REFERENCES analisisMasasMieles(idAnalisisMasasMieles),
+    FOREIGN KEY (idAnalisispHMolinosBagazoCachaza) REFERENCES analisispHMolinosBagazoCachaza(idAnalisispHMolinosBagazoCachaza)
+);

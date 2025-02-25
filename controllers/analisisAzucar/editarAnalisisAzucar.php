@@ -1,0 +1,306 @@
+<?php
+include $_SERVER['DOCUMENT_ROOT'] . '/AnalisisLaboratorio/config/config.php';
+include ROOT_PATH . 'config/conexion.php';
+include ROOT_PATH . 'includes/bitacora.php';
+
+// Iniciar sesión si no está iniciada
+session_start();
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['idUsuario'])) {
+    // Si no hay sesión activa, redirigir al formulario de login
+    header("Location: " . BASE_PATH . "login.html");
+    exit(); // Asegurar que el script se detenga después de redirigir
+}
+
+$error = ""; // Variable para capturar errores
+
+// Verificar si se ha enviado el ID por la URL
+if (isset($_GET['id'])) {
+    $idAnalisisAzucar = $_GET['id'];
+
+    // Obtener los datos actuales del registro
+    try {
+        $stmt = $conexion->prepare("SELECT * FROM analisisazucar WHERE idAnalisisAzucar = :idAnalisisAzucar");
+        $stmt->bindParam(':idAnalisisAzucar', $idAnalisisAzucar, PDO::PARAM_INT);
+        $stmt->execute();
+        $registro = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$registro) {
+            echo "Registro no encontrado.";
+            exit();
+        }
+
+        // Asignar valores si existen, de lo contrario, vacíos
+        $periodoZafra = $registro['periodoZafra'] ?? '';
+        $fechaIngreso = $registro['fechaIngreso'] ?? '';
+        $observacion = htmlspecialchars($registro['observacion'] ?? '', ENT_QUOTES, 'UTF-8');
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+        exit();
+    }
+} else {
+    echo "ID no recibido.";
+    exit();
+}
+
+// Actualizar los datos si se envía el formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $hora = $_POST['hora'];
+    $templa = $_POST['templa'];
+    $color = $_POST['color'];
+    $turbidez = $_POST['turbidez'];
+    $vitaminaA = $_POST['vitaminaA'];
+    $pol = $_POST['pol'];
+    $humedad = $_POST['humedad'];
+    $cenizas = $_POST['cenizas'];
+    $particulasFe = $_POST['particulasFe'];
+    $observacion = $_POST['observacion'];
+    $periodoZafra = $_POST['periodoZafra'] ?? $periodoZafra;
+    $fechaIngreso = $_POST['fechaIngreso'] ?? $fechaIngreso;
+
+    // Verificar si ya existe otro registro con la misma hora o templa, periodoZafra y fechaIngreso
+    if (empty($error)) {
+        try {
+            $check_sql = "SELECT COUNT(*) FROM analisisazucar 
+                          WHERE (hora = :hora OR templa = :templa) 
+                          AND periodoZafra = :periodoZafra 
+                          AND fechaIngreso = :fechaIngreso 
+                          AND idAnalisisAzucar != :idAnalisisAzucar";
+            $check_stmt = $conexion->prepare($check_sql);
+            $check_stmt->bindParam(':hora', $hora);
+            $check_stmt->bindParam(':templa', $templa);
+            $check_stmt->bindParam(':periodoZafra', $periodoZafra);
+            $check_stmt->bindParam(':fechaIngreso', $fechaIngreso);
+            $check_stmt->bindParam(':idAnalisisAzucar', $idAnalisisAzucar);
+            $check_stmt->execute();
+            $count = $check_stmt->fetchColumn();
+
+            if ($count > 0) {
+                $error = "Ya existe un registro con la misma hora o templa, periodo de zafra y fecha.";
+            }
+        } catch (PDOException $e) {
+            echo "Error al comprobar duplicados: " . $e->getMessage();
+            exit();
+        }
+    }
+
+    // Validar que todos los campos requeridos estén presentes
+    if (empty($periodoZafra) || empty($fechaIngreso) || empty($templa) || empty($hora)) {
+        $error = "Todos los campos son obligatorios.";
+    }
+
+    // Validar que los valores no sean negativos
+    if (empty($error)) {
+        if ($color <= 0) {
+            $error = "El valor de Color debe ser mayor que cero.";
+        } elseif ($turbidez <= 0) {
+            $error = "El valor de Turbidez debe ser mayor que cero.";
+        } elseif ($vitaminaA < 0) {
+            $error = "El valor de Vitamina A no puede ser negativo.";
+        } elseif ($pol <= 0) {
+            $error = "El valor de Pol debe ser mayor que cero.";
+        } elseif ($humedad <= 0) {
+            $error = "El valor de Humedad debe ser mayor que cero.";
+        } elseif ($cenizas <= 0) {
+            $error = "El valor de Cenizas debe ser mayor que cero.";
+        }
+    }
+
+    // Si no hay errores, proceder con la actualización
+    if (empty($error)) {
+        try {
+            $sql = "UPDATE analisisazucar 
+                    SET hora = :hora, 
+                        templa = :templa, 
+                        color = :color,
+                        turbidez = :turbidez, 
+                        vitaminaA = :vitaminaA, 
+                        pol = :pol, 
+                        humedad = :humedad, 
+                        cenizas = :cenizas, 
+                        particulasFe = :particulasFe,
+                        observacion = :observacion, 
+                        periodoZafra = :periodoZafra, 
+                        fechaIngreso = :fechaIngreso 
+                    WHERE idAnalisisAzucar = :idAnalisisAzucar";
+
+            $stmt = $conexion->prepare($sql);
+            $stmt->bindParam(':hora', $hora);
+            $stmt->bindParam(':templa', $templa);
+            $stmt->bindParam(':color', $color);
+            $stmt->bindParam(':turbidez', $turbidez);
+            $stmt->bindParam(':vitaminaA', $vitaminaA);
+            $stmt->bindParam(':pol', $pol);
+            $stmt->bindParam(':humedad', $humedad);
+            $stmt->bindParam(':cenizas', $cenizas);
+            $stmt->bindParam(':particulasFe', $particulasFe);
+            $stmt->bindParam(':observacion', $observacion);
+            $stmt->bindParam(':periodoZafra', $periodoZafra);
+            $stmt->bindParam(':fechaIngreso', $fechaIngreso);
+            $stmt->bindParam(':idAnalisisAzucar', $idAnalisisAzucar);
+
+            $stmt->execute();
+
+            $detallesCambio = "Hora: " . ($registro['hora'] ?? '') . " → $hora, ";
+            $detallesCambio .= "Templa: " . ($registro['templa'] ?? '') . " → $templa, ";
+            $detallesCambio .= "Color: " . ($registro['color'] ?? '') . " → $color, ";
+            $detallesCambio .= "Turbidez: " . ($registro['turbidez'] ?? '') . " → $turbidez, ";
+            $detallesCambio .= "Vitamina A: " . ($registro['vitaminaA'] ?? '') . " → $vitaminaA, ";
+            $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " → $pol, ";
+            $detallesCambio .= "Humedad: " . ($registro['humedad'] ?? '') . " → $humedad, ";
+            $detallesCambio .= "Cenizas: " . ($registro['cenizas'] ?? '') . " → $cenizas, ";
+            $detallesCambio .= "Partículas Fe: " . ($registro['particulasFe'] ? 'Si' : 'No') . " → " . ($particulasFe ? 'Si' : 'No') . ", ";
+            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
+            
+            registrarBitacora(
+                $_SESSION['nombre'],
+                "Edición de registro en Análisis Azúcar",
+                $idAnalisisAzucar,
+                "analisisazucar",
+                $detallesCambio
+            );
+
+            // Redirigir después de la actualización
+            $redirectUrl = BASE_PATH . "controllers/analisisAzucar/mostrarAnalisisAzucar.php?mensaje=Registro+actualizado+correctamente";
+            if (!empty($periodoZafra)) {
+                $redirectUrl .= "&periodoZafra=" . urlencode($periodoZafra);
+            }
+            if (!empty($fechaIngreso)) {
+                $redirectUrl .= "&fechaIngreso=" . urlencode($fechaIngreso);
+            }
+            header("Location: $redirectUrl");
+            exit();
+        } catch (PDOException $e) {
+            echo "Error al actualizar el registro: " . $e->getMessage();
+        }
+    } else {
+        // Redirigir en caso de error
+        header("Location: " . BASE_PATH . "controllers/analisisAzucar/editarAnalisisAzucar.php?id=" . urlencode($idAnalisisAzucar) . "&error=" . urlencode($error));
+        exit();
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Análisis Azúcar</title>
+    <link href="<?= BASE_PATH ?>public/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= BASE_PATH ?>public/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_PATH ?>public/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        .btn-update {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        .btn-update:hover {
+            background-color: #224abe;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <?php include ROOT_PATH . 'includes/sidebar.php'; ?>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <?php include ROOT_PATH . 'includes/topbar.php'; ?>
+                <div class="container-fluid">
+                    <h1 class="h3 mb-2 text-gray-800">Editar Registro de Análisis Azúcar</h1>
+
+                    <!-- Mostrar mensajes de éxito o error -->
+                    <?php if (isset($_GET['mensaje'])): ?>
+                        <div class="alert alert-success">
+                            <?= htmlspecialchars($_GET['mensaje']); ?>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-danger">
+                            <?= htmlspecialchars($_GET['error']); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-body">
+                            <form action="" method="POST">
+                                <div class="mb-3">
+                                    <label for="periodoZafra" class="form-label">Periodo Zafra:</label>
+                                    <input type="text" id="periodoZafra" name="periodoZafra" class="form-control" value="<?php echo $registro['periodoZafra']; ?>" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fechaIngreso" class="form-label">Fecha de Ingreso:</label>
+                                    <input type="date" id="fechaIngreso" name="fechaIngreso" class="form-control" value="<?php echo $registro['fechaIngreso']; ?>" readonly required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="templa" class="form-label">Templa:</label>
+                                    <input type="number" id="templa" name="templa" class="form-control" value="<?= htmlspecialchars($registro['templa']); ?>" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hora" class="form-label">Hora:</label>
+                                    <input type="time" id="hora" name="hora" class="form-control" value="<?= htmlspecialchars($registro['hora']); ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="color" class="form-label">Color:</label>
+                                    <input type="number" id="color" name="color" class="form-control" step="0.01" value="<?= htmlspecialchars($registro['color']); ?>" min="0" required>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="turbidez" class="form-label">Turbidéz:</label>
+                                        <input type="number" id="turbidez" name="turbidez" class="form-control" step="0.01" value="<?= htmlspecialchars($registro['turbidez']); ?>" min="0" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="vitaminaA" class="form-label">Vitamina A:</label>
+                                        <input type="number" id="vitaminaA" name="vitaminaA" class="form-control" step="0.01" value="<?= htmlspecialchars($registro['vitaminaA']); ?>" min="0">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="pol" class="form-label">Pol:</label>
+                                        <input type="number" id="pol" name="pol" class="form-control" step="0.01" value="<?= htmlspecialchars($registro['pol']); ?>" min="0" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="humedad" class="form-label">Humedad:</label>
+                                        <input type="number" id="humedad" name="humedad" class="form-control" step="0.01" value="<?= htmlspecialchars($registro['humedad']); ?>" min="0" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="cenizas" class="form-label">Cenizas:</label>
+                                        <input type="number" id="cenizas" name="cenizas" class="form-control" step="0.01" value="<?= htmlspecialchars($registro['cenizas']); ?>" min="0" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="particulasFe" class="form-label">Partículas Fe:</label>
+                                        <select id="particulasFe" name="particulasFe" class="form-control">
+                                            <option value="1" <?= $registro['particulasFe'] ? 'selected' : ''; ?>>Si</option>
+                                            <option value="0" <?= !$registro['particulasFe'] ? 'selected' : ''; ?>>No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="observacion" class="form-label">Observación:</label>
+                                    <textarea id="observacion" name="observacion" class="form-control"><?= htmlspecialchars($registro['observacion'] ?? ''); ?></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-update">Actualizar</button>
+                                <a href="<?= BASE_PATH ?>controllers/analisisAzucar/mostrarAnalisisAzucar.php?periodoZafra=<?= urlencode($periodoZafra); ?>&fechaIngreso=<?= urlencode($fechaIngreso); ?>" class="btn btn-secondary">Regresar</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+    <script src="<?= BASE_PATH; ?>public/vendor/jquery/jquery.min.js"></script>
+    <script src="<?= BASE_PATH; ?>public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_PATH; ?>public/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="<?= BASE_PATH; ?>public/js/sb-admin-2.min.js"></script>
+</body>
+
+</html>
