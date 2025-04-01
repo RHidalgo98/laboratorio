@@ -140,23 +140,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio .= "Primario: " . ($registro['primario'] ?? '') . " → $primario, ";
-            $detallesCambio .= "Mezclado: " . ($registro['mezclado'] ?? '') . " → $mezclado, ";
-            $detallesCambio .= "Residual: " . ($registro['residual'] ?? '') . " → $residual, ";
-            $detallesCambio .= "Sulfitado: " . ($registro['sulfitado'] ?? '') . " → $sulfitado, ";
-            $detallesCambio .= "Filtrado: " . ($registro['filtrado'] ?? '') . " → $filtrado, ";
-            $detallesCambio .= "Alcalizado: " . ($registro['alcalizado'] ?? '') . " → $alcalizado, ";
-            $detallesCambio .= "Clarificado: " . ($registro['clarificado'] ?? '') . " → $clarificado, ";
-            $detallesCambio .= "Meladura: " . ($registro['meladura'] ?? '') . " → $meladura, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Control de PH",
-                $idControlPH,
-                "controlph",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['primario'] != $primario) {
+                $detallesCambio .= "Primario: " . ($registro['primario'] ?? '') . " -> $primario, ";
+            }
+            if ($registro['mezclado'] != $mezclado) {
+                $detallesCambio .= "Mezclado: " . ($registro['mezclado'] ?? '') . " -> $mezclado, ";
+            }
+            if ($registro['residual'] != $residual) {
+                $detallesCambio .= "Residual: " . ($registro['residual'] ?? '') . " -> $residual, ";
+            }
+            if ($registro['sulfitado'] != $sulfitado) {
+                $detallesCambio .= "Sulfitado: " . ($registro['sulfitado'] ?? '') . " -> $sulfitado, ";
+            }
+            if ($registro['filtrado'] != $filtrado) {
+                $detallesCambio .= "Filtrado: " . ($registro['filtrado'] ?? '') . " -> $filtrado, ";
+            }
+            if ($registro['alcalizado'] != $alcalizado) {
+                $detallesCambio .= "Alcalizado: " . ($registro['alcalizado'] ?? '') . " -> $alcalizado, ";
+            }
+            if ($registro['clarificado'] != $clarificado) {
+                $detallesCambio .= "Clarificado: " . ($registro['clarificado'] ?? '') . " -> $clarificado, ";
+            }
+            if ($registro['meladura'] != $meladura) {
+                $detallesCambio .= "Meladura: " . ($registro['meladura'] ?? '') . " -> $meladura, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Control de PH",
+                    $idControlPH,
+                    "controlph",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/controlPH/mostrarControlPH.php?mensaje=Registro+actualizado+correctamente";

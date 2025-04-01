@@ -130,21 +130,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio .= "Pol1: " . ($registro['pol1'] ?? '') . " → $pol1, ";
-            $detallesCambio .= "gFt1: " . ($registro['gFt1'] ?? '') . " → $gFt1, ";
-            $detallesCambio .= "Pol2: " . ($registro['pol2'] ?? '') . " → $pol2, ";
-            $detallesCambio .= "gFt2: " . ($registro['gFt2'] ?? '') . " → $gFt2, ";
-            $detallesCambio .= "Pol3: " . ($registro['pol3'] ?? '') . " → $pol3, ";
-            $detallesCambio .= "gFt3: " . ($registro['gFt3'] ?? '') . " → $gFt3, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
+            $detallesCambio = "";
 
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Filtro Cachaza",
-                $idFiltroCachaza,
-                "filtrocachaza",
-                $detallesCambio
-            );
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['pol1'] != $pol1) {
+                $detallesCambio .= "Pol1: " . ($registro['pol1'] ?? '') . " -> $pol1, ";
+            }
+            if ($registro['gFt1'] != $gFt1) {
+                $detallesCambio .= "gFt1: " . ($registro['gFt1'] ?? '') . " -> $gFt1, ";
+            }
+            if ($registro['pol2'] != $pol2) {
+                $detallesCambio .= "Pol2: " . ($registro['pol2'] ?? '') . " -> $pol2, ";
+            }
+            if ($registro['gFt2'] != $gFt2) {
+                $detallesCambio .= "gFt2: " . ($registro['gFt2'] ?? '') . " -> $gFt2, ";
+            }
+            if ($registro['pol3'] != $pol3) {
+                $detallesCambio .= "Pol3: " . ($registro['pol3'] ?? '') . " -> $pol3, ";
+            }
+            if ($registro['gFt3'] != $gFt3) {
+                $detallesCambio .= "gFt3: " . ($registro['gFt3'] ?? '') . " -> $gFt3, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Filtro Cachaza",
+                    $idFiltroCachaza,
+                    "filtrocachaza",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/filtrosCachaza/mostrarFC.php?mensaje=Registro+actualizado+correctamente";

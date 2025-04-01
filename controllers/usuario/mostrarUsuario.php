@@ -145,6 +145,7 @@ try {
                     <?php endif; ?>
 
                     <a href="<?= BASE_PATH ?>forms/registrarUsuario.php" class="btn btn-new mb-4">Agregar Nuevo Usuario</a>
+                    <button id="exportarPDF" class="btn btn-danger mb-4">Exportar a PDF</button>
                     <div class="card shadow mb-4">
                         <div class="card-body">
                             <?php
@@ -209,6 +210,8 @@ try {
         <script src="<?= BASE_PATH; ?>public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="<?= BASE_PATH; ?>public/vendor/jquery-easing/jquery.easing.min.js"></script>
         <script src="<?= BASE_PATH; ?>public/js/sb-admin-2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
         <!-- DataTables Initialization -->
         <script>
@@ -234,6 +237,19 @@ try {
                         $password.text('********');
                         $(this).removeClass('fa-eye-slash').addClass('fa-eye');
                     }
+                });
+
+                $('#exportarPDF').on('click', function() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('landscape'); // Cambiar la orientación a horizontal
+                    // Ocultar las columnas de contraseña y acciones
+                    $('#tablaUsuarios th:nth-child(4), #tablaUsuarios td:nth-child(4)').hide();
+                    $('#tablaUsuarios th:nth-child(9), #tablaUsuarios td:nth-child(9)').hide();
+                    doc.autoTable({ html: '#tablaUsuarios' });
+                    doc.save('usuarios.pdf');
+                    // Mostrar las columnas de nuevo
+                    $('#tablaUsuarios th:nth-child(4), #tablaUsuarios td:nth-child(4)').show();
+                    $('#tablaUsuarios th:nth-child(9), #tablaUsuarios td:nth-child(9)').show();
                 });
             });
         </script>

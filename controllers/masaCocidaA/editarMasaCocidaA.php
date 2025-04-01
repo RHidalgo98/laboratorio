@@ -131,21 +131,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio = "Num: " . ($registro['num'] ?? '') . " → $num, ";
-            $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " → $hora, ";
-            $detallesCambio .= "Tacho: " . ($registro['tacho'] ?? '') . " → $tacho, ";
-            $detallesCambio .= "Vol Ft³: " . ($registro['volFt3'] ?? '') . " → $volFt3, ";
-            $detallesCambio .= "Brix: " . ($registro['brix'] ?? '') . " → $brix, ";
-            $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " → $pol, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
+            $detallesCambio = "";
+            if ($registro['num'] != $num) {
+                $detallesCambio .= "Num: " . ($registro['num'] ?? '') . " -> $num, ";
+            }
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['tacho'] != $tacho) {
+                $detallesCambio .= "Tacho: " . ($registro['tacho'] ?? '') . " -> $tacho, ";
+            }
+            if ($registro['volFt3'] != $volFt3) {
+                $detallesCambio .= "Vol Ft³: " . ($registro['volFt3'] ?? '') . " -> $volFt3, ";
+            }
+            if ($registro['brix'] != $brix) {
+                $detallesCambio .= "Brix: " . ($registro['brix'] ?? '') . " -> $brix, ";
+            }
+            if ($registro['pol'] != $pol) {
+                $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " -> $pol, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
 
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Masa Cocida A",
-                $idMasaCocidaA,
-                "masacocidaa",
-                $detallesCambio
-            );
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Masa Cocida A",
+                    $idMasaCocidaA,
+                    "masacocidaa",
+                    $detallesCambio
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/masaCocidaA/mostrarMasaCocidaA.php?mensaje=Registro+actualizado+correctamente";

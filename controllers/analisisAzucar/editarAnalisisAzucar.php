@@ -142,24 +142,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio = "Hora: " . ($registro['hora'] ?? '') . " → $hora, ";
-            $detallesCambio .= "Templa: " . ($registro['templa'] ?? '') . " → $templa, ";
-            $detallesCambio .= "Color: " . ($registro['color'] ?? '') . " → $color, ";
-            $detallesCambio .= "Turbidez: " . ($registro['turbidez'] ?? '') . " → $turbidez, ";
-            $detallesCambio .= "Vitamina A: " . ($registro['vitaminaA'] ?? '') . " → $vitaminaA, ";
-            $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " → $pol, ";
-            $detallesCambio .= "Humedad: " . ($registro['humedad'] ?? '') . " → $humedad, ";
-            $detallesCambio .= "Cenizas: " . ($registro['cenizas'] ?? '') . " → $cenizas, ";
-            $detallesCambio .= "Partículas Fe: " . ($registro['particulasFe'] ? 'Si' : 'No') . " → " . ($particulasFe ? 'Si' : 'No') . ", ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Análisis Azúcar",
-                $idAnalisisAzucar,
-                "analisisazucar",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['templa'] != $templa) {
+                $detallesCambio .= "Templa: " . ($registro['templa'] ?? '') . " -> $templa, ";
+            }
+            if ($registro['color'] != $color) {
+                $detallesCambio .= "Color: " . ($registro['color'] ?? '') . " -> $color, ";
+            }
+            if ($registro['turbidez'] != $turbidez) {
+                $detallesCambio .= "Turbidez: " . ($registro['turbidez'] ?? '') . " -> $turbidez, ";
+            }
+            if ($registro['vitaminaA'] != $vitaminaA) {
+                $detallesCambio .= "Vitamina A: " . ($registro['vitaminaA'] ?? '') . " -> $vitaminaA, ";
+            }
+            if ($registro['pol'] != $pol) {
+                $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " -> $pol, ";
+            }
+            if ($registro['humedad'] != $humedad) {
+                $detallesCambio .= "Humedad: " . ($registro['humedad'] ?? '') . " -> $humedad, ";
+            }
+            if ($registro['cenizas'] != $cenizas) {
+                $detallesCambio .= "Cenizas: " . ($registro['cenizas'] ?? '') . " -> $cenizas, ";
+            }
+            if ($registro['particulasFe'] != $particulasFe) {
+                $detallesCambio .= "Partículas Fe: " . ($registro['particulasFe'] ? 'Si' : 'No') . " -> " . ($particulasFe ? 'Si' : 'No') . ", ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Análisis Azúcar",
+                    $idAnalisisAzucar,
+                    "analisisazucar",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/analisisAzucar/mostrarAnalisisAzucar.php?mensaje=Registro+actualizado+correctamente";

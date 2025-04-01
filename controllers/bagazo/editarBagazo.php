@@ -111,17 +111,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " → $pol, ";
-            $detallesCambio .= "Humedad: " . ($registro['humedad'] ?? '') . " → $humedad, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Bagazo",
-                $idBagazo,
-                "bagazo",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['pol'] != $pol) {
+                $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " -> $pol, ";
+            }
+            if ($registro['humedad'] != $humedad) {
+                $detallesCambio .= "Humedad: " . ($registro['humedad'] ?? '') . " -> $humedad, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Bagazo",
+                    $idBagazo,
+                    "bagazo",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/bagazo/mostrarBagazo.php?mensaje=Registro+actualizado+correctamente";

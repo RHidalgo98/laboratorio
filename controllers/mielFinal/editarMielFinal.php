@@ -126,20 +126,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio = "Num: " . ($registro['num'] ?? '') . " → $num, ";
-            $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " → $hora, ";
-            $detallesCambio .= "Brix: " . ($registro['brix'] ?? '') . " → $brix, ";
-            $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " → $pol, ";
-            $detallesCambio .= "Azuc Red: " . ($registro['azucRed'] ?? '') . " → $azucRed, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Miel Final",
-                $idMielFinal,
-                "mielfinal",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if ($registro['num'] != $num) {
+                $detallesCambio .= "Num: " . ($registro['num'] ?? '') . " -> $num, ";
+            }
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['brix'] != $brix) {
+                $detallesCambio .= "Brix: " . ($registro['brix'] ?? '') . " -> $brix, ";
+            }
+            if ($registro['pol'] != $pol) {
+                $detallesCambio .= "Pol: " . ($registro['pol'] ?? '') . " -> $pol, ";
+            }
+            if ($registro['azucRed'] != $azucRed) {
+                $detallesCambio .= "Azuc Red: " . ($registro['azucRed'] ?? '') . " -> $azucRed, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Miel Final",
+                    $idMielFinal,
+                    "mielfinal",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/mielFinal/mostrarMielFinal.php?mensaje=Registro+actualizado+correctamente";

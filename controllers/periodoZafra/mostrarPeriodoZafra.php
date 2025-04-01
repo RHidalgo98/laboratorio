@@ -54,6 +54,8 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="<?= BASE_PATH ?>public/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="<?= BASE_PATH ?>public/css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         .btn-new {
@@ -136,6 +138,7 @@ try {
                     <?php endif; ?>
 
                     <a href="<?= BASE_PATH ?>forms/registrarPeriodoZafra.php" class="btn btn-new mb-4">Agregar Nuevo Periodo</a>
+                    <button id="exportarPDF" class="btn btn-danger mb-4">Exportar a PDF</button>
                     <div class="card shadow mb-4">
                         <div class="card-body table-responsive">
                             <?php
@@ -202,6 +205,17 @@ try {
                     "url": "//cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json"
                 }
             });
+        });
+
+        document.getElementById('exportarPDF').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            // Ocultar la columna de acciones
+            $('#tablaPeriodos th:nth-child(5), #tablaPeriodos td:nth-child(5)').hide();
+            doc.autoTable({ html: '#tablaPeriodos' });
+            // Mostrar la columna de acciones
+            $('#tablaPeriodos th:nth-child(5), #tablaPeriodos td:nth-child(5)').show();
+            doc.save('periodos_zafra.pdf');
         });
     </script>
     <script>

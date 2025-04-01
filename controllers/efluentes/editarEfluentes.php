@@ -120,18 +120,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio .= "Enfriamiento: " . ($registro['enfriamiento'] ?? '') . " → $enfriamiento, ";
-            $detallesCambio .= "Retorno: " . ($registro['retorno'] ?? '') . " → $retorno, ";
-            $detallesCambio .= "Desechos: " . ($registro['desechos'] ?? '') . " → $desechos, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Efluentes",
-                $idEfluentes,
-                "efluentes",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['enfriamiento'] != $enfriamiento) {
+                $detallesCambio .= "Enfriamiento: " . ($registro['enfriamiento'] ?? '') . " -> $enfriamiento, ";
+            }
+            if ($registro['retorno'] != $retorno) {
+                $detallesCambio .= "Retorno: " . ($registro['retorno'] ?? '') . " -> $retorno, ";
+            }
+            if ($registro['desechos'] != $desechos) {
+                $detallesCambio .= "Desechos: " . ($registro['desechos'] ?? '') . " -> $desechos, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Efluentes",
+                    $idEfluentes,
+                    "efluentes",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/efluentes/mostrarEfluentes.php?mensaje=Registro+actualizado+correctamente";

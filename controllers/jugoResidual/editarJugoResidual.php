@@ -129,28 +129,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $detallesCambio = [];
             
             // Comparar cambios en cada campo
+            if($registro['hora'] != $hora) {
+                $detallesCambio[] = "Hora: {$registro['hora']} -> $hora";
+            }
             if(($registro['observacion'] ?? '') != $observacion) {
-            $detallesCambio[] = "Observación: " . ($registro['observacion'] ?? 'vacío') . " → " . ($observacion ?: 'vacío');
+                $detallesCambio[] = "Observación: " . ($registro['observacion'] ?? '') . " -> " . ($observacion ?: '');
             }
             if($registro['brix'] != $brix) {
-            $detallesCambio[] = "Brix: {$registro['brix']} → $brix";
+                $detallesCambio[] = "Brix: {$registro['brix']} -> $brix";
             }
             if($registro['sac'] != $sac) {
-            $detallesCambio[] = "SAC: {$registro['sac']} → $sac";
+                $detallesCambio[] = "SAC: {$registro['sac']} -> $sac";
             }
             if($registro['mlGastado'] != $mlGastado) {
-            $detallesCambio[] = "ML Gastado: {$registro['mlGastado']} → $mlGastado";
+                $detallesCambio[] = "ML Gastado: {$registro['mlGastado']} -> $mlGastado";
             }
             
             // Registrar solo si hubo cambios
             if(!empty($detallesCambio)) {
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Actualización de registro en Jugo Residual",
-                $idJugoResidual,
-                "jugoresidual",
-                implode(", ", $detallesCambio)
-            );
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Jugo Residual",
+                    $idJugoResidual,
+                    "jugoresidual",
+                    implode(", ", $detallesCambio)
+                );
             }
             $url = BASE_PATH . "controllers/jugoResidual/mostrarJugoResidual.php?mensaje=Registro+actualizado+correctamente";
             $url .= "&periodoZafra=" . urlencode($periodoZafra);

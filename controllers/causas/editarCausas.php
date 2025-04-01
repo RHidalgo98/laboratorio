@@ -162,18 +162,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio = "Turno: " . ($registro['turno'] ?? '') . " → $turno, ";
-            $detallesCambio .= "Paro: " . ($registro['paro'] ?? '') . " → $paro, ";
-            $detallesCambio .= "Arranque: " . ($registro['arranque'] ?? '') . " → $arranque, ";
-            $detallesCambio .= "Motivo: " . ($registro['motivo'] ?? '') . " → $motivo";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Causas",
-                $idCausa,
-                "causas",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if (($registro['turno'] ?? '') !== $turno) {
+                $detallesCambio .= "Turno: " . ($registro['turno'] ?? '') . " -> $turno, ";
+            }
+            if (($registro['paro'] ?? '') !== $paro) {
+                $detallesCambio .= "Paro: " . ($registro['paro'] ?? '') . " -> $paro, ";
+            }
+            if (($registro['arranque'] ?? '') !== $arranque) {
+                $detallesCambio .= "Arranque: " . ($registro['arranque'] ?? '') . " -> $arranque, ";
+            }
+            if (($registro['motivo'] ?? '') !== $motivo) {
+                $detallesCambio .= "Motivo: " . ($registro['motivo'] ?? '') . " -> $motivo";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Causas",
+                    $idCausa,
+                    "causas",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/causas/mostrarCausas.php?mensaje=Registro+actualizado+correctamente";

@@ -133,18 +133,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio = "Marcador: " . ($registro['marcador'] ?? '') . " → $marcador, ";
-            $detallesCambio .= "Totalizador: " . ($registro['totalizador'] ?? '') . " → $totalizador, ";
-            $detallesCambio .= "Valor Inicial: " . ($registro['valorInicial'] ?? '') . " → $valorInicial, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
-            
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Agua de Imbibición",
-                $idAguaImbibicion,
-                "aguaimbibicion",
-                $detallesCambio
-            );
+            $detallesCambio = "";
+            if ($registro['hora'] != $hora) {
+                $detallesCambio .= "Hora: " . ($registro['hora'] ?? '') . " -> $hora, ";
+            }
+            if ($registro['marcador'] != $marcador) {
+                $detallesCambio .= "Marcador: " . ($registro['marcador'] ?? '') . " -> $marcador, ";
+            }
+            if ($registro['totalizador'] != $totalizador) {
+                $detallesCambio .= "Totalizador: " . ($registro['totalizador'] ?? '') . " -> $totalizador, ";
+            }
+            if ($registro['valorInicial'] != $valorInicial) {
+                $detallesCambio .= "Valor Inicial: " . ($registro['valorInicial'] ?? '') . " -> $valorInicial, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
+
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Agua de Imbibición",
+                    $idAguaImbibicion,
+                    "aguaimbibicion",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/aguaimbibicion/mostrarAguaImbibicion.php?mensaje=Registro+actualizado+correctamente";

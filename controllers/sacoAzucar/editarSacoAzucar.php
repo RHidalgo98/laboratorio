@@ -125,21 +125,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt->execute();
 
-            $detallesCambio = "Turno: " . ($registro['turno'] ?? '') . " → $turno, ";
-            $detallesCambio .= "Toneladas de Caña ACHSA: " . ($registro['tnCanaACHSA'] ?? '') . " → $tnCanaACHSA, ";
-            $detallesCambio .= "Toneladas de Molienda: " . ($registro['moliendaTn'] ?? '') . " → $moliendaTn, ";
-            $detallesCambio .= "Sacos de Azúcar Blanco: " . ($registro['sacos50AzucarBlanco'] ?? '') . " → $sacos50AzucarBlanco, ";
-            $detallesCambio .= "Sacos de Azúcar Morena: " . ($registro['sacosAzucarMorena'] ?? '') . " → $sacosAzucarMorena, ";
-            $detallesCambio .= "Jumbo de Azúcar Blanco: " . ($registro['jumboAzucarBlanco'] ?? '') . " → $jumboAzucarBlanco, ";
-            $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " → $observacion";
+            $detallesCambio = "";
+            if ($registro['turno'] != $turno) {
+                $detallesCambio .= "Turno: " . ($registro['turno'] ?? '') . " -> $turno, ";
+            }
+            if ($registro['tnCanaACHSA'] != $tnCanaACHSA) {
+                $detallesCambio .= "Toneladas de Caña ACHSA: " . ($registro['tnCanaACHSA'] ?? '') . " -> $tnCanaACHSA, ";
+            }
+            if ($registro['moliendaTn'] != $moliendaTn) {
+                $detallesCambio .= "Toneladas de Molienda: " . ($registro['moliendaTn'] ?? '') . " -> $moliendaTn, ";
+            }
+            if ($registro['sacos50AzucarBlanco'] != $sacos50AzucarBlanco) {
+                $detallesCambio .= "Sacos de Azúcar Blanco: " . ($registro['sacos50AzucarBlanco'] ?? '') . " -> $sacos50AzucarBlanco, ";
+            }
+            if ($registro['sacosAzucarMorena'] != $sacosAzucarMorena) {
+                $detallesCambio .= "Sacos de Azúcar Morena: " . ($registro['sacosAzucarMorena'] ?? '') . " -> $sacosAzucarMorena, ";
+            }
+            if ($registro['jumboAzucarBlanco'] != $jumboAzucarBlanco) {
+                $detallesCambio .= "Jumbo de Azúcar Blanco: " . ($registro['jumboAzucarBlanco'] ?? '') . " -> $jumboAzucarBlanco, ";
+            }
+            if ($registro['observacion'] != $observacion) {
+                $detallesCambio .= "Observación: " . ($registro['observacion'] ?? '') . " -> $observacion";
+            }
 
-            registrarBitacora(
-                $_SESSION['nombre'],
-                "Edición de registro en Saco de Azúcar",
-                $idSacoAzucar,
-                "sacoazucar",
-                $detallesCambio
-            );
+            if (!empty($detallesCambio)) {
+                registrarBitacora(
+                    $_SESSION['nombre'],
+                    "Edición de registro en Saco de Azúcar",
+                    $idSacoAzucar,
+                    "sacoazucar",
+                    rtrim($detallesCambio, ', ')
+                );
+            }
 
             // Redirigir después de la actualización
             $redirectUrl = BASE_PATH . "controllers/sacoAzucar/mostrarSacoAzucar.php?mensaje=Registro+actualizado+correctamente";

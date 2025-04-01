@@ -102,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception('Error al registrar en la base de datos.');
         }
     } catch (Exception $e) {
+        $error = $e->getMessage(); // Captura el mensaje real del error
         // Redirigir al formulario de registro con el mensaje de error y datos previamente ingresados
         header("Location: " . BASE_PATH . "forms/registrarMielA.php?periodoZafra=" . urlencode($periodoZafra) . "&fechaIngreso=" . urlencode($fechaIngreso) . "&error=" . urlencode($error) . "&hora=" . urlencode($hora) . "&num=" . urlencode($num) . "&brix=" . urlencode($brix) . "&pol=" . urlencode($pol) . "&observacion=" . urlencode($observacion));
         exit();

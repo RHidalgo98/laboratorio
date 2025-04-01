@@ -670,23 +670,23 @@ if (!empty($periodoZafra) && !empty($fechaIngreso)) {
         // Calcular Tn/hora
         foreach ($resultadosAguaImbibicion as &$registro) {
             if ($registro['totalizador'] !== null && $registro['totalizador'] > 0) {
-            if ($ultimoTotalizador === null) {
-            if ($registro['valorInicial'] !== null) {
-            // Calcular diferencia con el valor inicial para el primer registro
-            $diferencia = $registro['totalizador'] - $registro['valorInicial'];
+                if ($ultimoTotalizador === null) {
+                    if ($registro['valorInicial'] !== null) {
+                        // Calcular diferencia con el valor inicial para el primer registro
+                        $diferencia = $registro['totalizador'] - $registro['valorInicial'];
+                    } else {
+                        // Si no hay valor inicial, usar el totalizador directamente
+                        $diferencia = $registro['totalizador'];
+                    }
+                } else {
+                    // Calcular diferencia con el último totalizador para los registros posteriores
+                    $diferencia = $registro['totalizador'] - $ultimoTotalizador;
+                }
+                $registro['tnHora'] = ($diferencia >= 0) ? round($diferencia * $factorConversion, 3) : '';
+                // Actualizar el último totalizador
+                $ultimoTotalizador = $registro['totalizador'];
             } else {
-            // Si no hay valor inicial, usar el totalizador directamente
-            $diferencia = $registro['totalizador'];
-            }
-            } else {
-            // Calcular diferencia con el último totalizador para los registros posteriores
-            $diferencia = $registro['totalizador'] - $ultimoTotalizador;
-            }
-            $registro['tnHora'] = ($diferencia >= 0) ? round($diferencia * $factorConversion, 3) : '';
-            // Actualizar el último totalizador
-            $ultimoTotalizador = $registro['totalizador'];
-            } else {
-            $registro['tnHora'] = 0; // Si no hay totalizador, dejar vacío
+                $registro['tnHora'] = 0; // Si no hay totalizador, dejar vacío
             }
         }
         unset($registro); // Liberar referencia
@@ -697,19 +697,19 @@ if (!empty($periodoZafra) && !empty($fechaIngreso)) {
 
         foreach ($resultadosAguaImbibicion as $registro) {
             foreach ($sumas as $key => $value) {
-            if (is_numeric($registro[$key]) && $registro[$key] != 0 && $registro[$key] != '-') {
-            $sumas[$key] += $registro[$key];
-            $contadores[$key]++;
-            }
+                if (is_numeric($registro[$key]) && $registro[$key] != 0 && $registro[$key] != '-') {
+                    $sumas[$key] += $registro[$key];
+                    $contadores[$key]++;
+                }
             }
         }
 
         $promediosAguaImbibicion = [];
         foreach ($sumas as $key => $value) {
             if ($key === 'tnHora') {
-            $promediosAguaImbibicion[$key] = round($value, 2);
+                $promediosAguaImbibicion[$key] = round($value, 2);
             } else {
-            $promediosAguaImbibicion[$key] = ($contadores[$key] > 0) ? round($value / $contadores[$key]) : 0;
+                $promediosAguaImbibicion[$key] = ($contadores[$key] > 0) ? round($value / $contadores[$key]) : 0;
             }
         }
 
@@ -732,16 +732,16 @@ if (!empty($periodoZafra) && !empty($fechaIngreso)) {
 
         foreach ($resultadosJugoMezcladoPHMBC as &$registro) {
             if ($registro['totalizador'] !== null) {
-            if ($ultimoTotalizador === null) {
-                $diferencia = $registro['totalizador'] - $registro['valorInicial'];
-                $registro['tnHora'] = ($diferencia < 0) ? "" : round($diferencia * $factorConversionGeneral, 3);
+                if ($ultimoTotalizador === null) {
+                    $diferencia = $registro['totalizador'] - $registro['valorInicial'];
+                    $registro['tnHora'] = ($diferencia < 0) ? "" : round($diferencia * $factorConversionGeneral, 3);
+                } else {
+                    $diferencia = $registro['totalizador'] - $ultimoTotalizador;
+                    $registro['tnHora'] = round($diferencia * $factorConversionGeneral, 3);
+                }
+                $ultimoTotalizador = $registro['totalizador'];
             } else {
-                $diferencia = $registro['totalizador'] - $ultimoTotalizador;
-                $registro['tnHora'] = round($diferencia * $factorConversionGeneral, 3);
-            }
-            $ultimoTotalizador = $registro['totalizador'];
-            } else {
-            $registro['tnHora'] = round(0 * $factorConversionGeneral, 3);
+                $registro['tnHora'] = round(0 * $factorConversionGeneral, 3);
             }
         }
         unset($registro); // Liberar referencia
@@ -752,19 +752,19 @@ if (!empty($periodoZafra) && !empty($fechaIngreso)) {
 
         foreach ($resultadosJugoMezcladoPHMBC as $registro) {
             foreach ($sumas as $key => $value) {
-            if ($registro[$key] !== null && $registro[$key] != 0 && $registro[$key] != '-') {
-                $sumas[$key] += is_numeric($registro[$key]) ? $registro[$key] : 0;
-                $contadores[$key]++;
-            }
+                if ($registro[$key] !== null && $registro[$key] != 0 && $registro[$key] != '-') {
+                    $sumas[$key] += is_numeric($registro[$key]) ? $registro[$key] : 0;
+                    $contadores[$key]++;
+                }
             }
         }
 
         $promediosJugoMezcladoPHMBC = [];
         foreach ($sumas as $key => $value) {
             if ($key === 'tnHora') {
-            $promediosJugoMezcladoPHMBC[$key] = round($value, 2);
+                $promediosJugoMezcladoPHMBC[$key] = round($value, 2);
             } else {
-            $promediosJugoMezcladoPHMBC[$key] = ($contadores[$key] > 0) ? round($value / $contadores[$key]) : 0;
+                $promediosJugoMezcladoPHMBC[$key] = ($contadores[$key] > 0) ? round($value / $contadores[$key]) : 0;
             }
         }
 
@@ -1200,7 +1200,9 @@ $periodos = $stmtPeriodos->fetchAll(PDO::FETCH_ASSOC);
                     <div class="container-fluid">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h1 class="h3 mb-2 text-gray-800">Resumen Diario</h1>
-                            <!-- <button class="btn btn-new" onclick="exportToExcel()">Exportar a Excel</button> -->
+                            <?php if (!empty($periodoZafra) && !empty($fechaIngreso)): ?>
+                                <button id="exportarPDF" class="btn btn-danger">Exportar a PDF</button>
+                            <?php endif; ?>
                         </div>
                         <!-- Filtros de selección de periodo y fecha -->
                         <form method="GET" action="" class="mb-4">
@@ -1255,8 +1257,8 @@ $periodos = $stmtPeriodos->fetchAll(PDO::FETCH_ASSOC);
                                 ($promediosMielB && array_filter($promediosMielB)) ||
                                 ($promediosMielFinal && array_filter($promediosMielFinal)) ||
                                 ($promediosAzucar && array_filter($promediosAzucar)) ||
-                                ($promediosMagmaB && array_filter($promediosMagmaB)) ||
-                                ($promediosMagmaC && array_filter($promediosMagmaC)) ||
+                                ($resultadosMagmaB && array_filter($resultadosMagmaB)) ||
+                                ($resultadosMagmaC && array_filter($resultadosMagmaC)) ||
                                 ($promediosEfluentes && array_filter($promediosEfluentes)) ||
                                 ($resultadosSacoAzucar && array_filter($resultadosSacoAzucar)) ||
                                 ($resultadosPromedioControlPH && array_filter($resultadosPromedioControlPH)) ||
@@ -1485,8 +1487,8 @@ $periodos = $stmtPeriodos->fetchAll(PDO::FETCH_ASSOC);
                                 ($promediosMielB && array_filter($promediosMielB)) ||
                                 ($promediosMielFinal && array_filter($promediosMielFinal)) ||
                                 ($promediosAzucar && array_filter($promediosAzucar)) ||
-                                ($promediosMagmaB && array_filter($promediosMagmaB)) ||
-                                ($promediosMagmaC && array_filter($promediosMagmaC)) ||
+                                ($resultadosMagmaB && array_filter($resultadosMagmaB)) ||
+                                ($resultadosMagmaC && array_filter($resultadosMagmaC)) ||
                                 ($promediosEfluentes && array_filter($promediosEfluentes)) ||
                                 ($resultadosSacoAzucar && array_filter($resultadosSacoAzucar))
 
@@ -2056,7 +2058,93 @@ $periodos = $stmtPeriodos->fetchAll(PDO::FETCH_ASSOC);
                         <script src="<?= BASE_PATH; ?>public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
                         <script src="<?= BASE_PATH; ?>public/vendor/jquery-easing/jquery.easing.min.js"></script>
                         <script src="<?= BASE_PATH; ?>public/js/sb-admin-2.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
+                        <script>
+                            $(document).ready(function() {
+                                // ...existing code...
+
+                                $('#exportarPDF').on('click', function() {
+                                    const {
+                                        jsPDF
+                                    } = window.jspdf;
+                                    const doc = new jsPDF('landscape'); // Orientación horizontal
+
+                                    const periodoZafra = "Periodo: <?= htmlspecialchars($periodoZafra) ?>";
+                                    const fechaIngreso = "Fecha: <?= htmlspecialchars($fechaIngreso) ?>";
+
+                                    const tables = document.querySelectorAll("table");
+                                    let startY = 20; // Posición inicial en Y
+                                    let pageHeight = doc.internal.pageSize.height - 10; // Altura disponible en la página
+                                    let tablaContador = 0; // Contador de tablas por página
+
+                                    function agregarEncabezado() {
+                                        doc.setFontSize(12);
+                                        doc.text(periodoZafra, doc.internal.pageSize.width - 60, 10, {
+                                            align: "right"
+                                        });
+                                        doc.text(fechaIngreso, doc.internal.pageSize.width - 60, 16, {
+                                            align: "right"
+                                        });
+                                    }
+
+                                    // Agregar encabezado en la primera página
+                                    agregarEncabezado();
+
+                                    tables.forEach(function(table) {
+                                        const tableName = table.previousElementSibling ? table.previousElementSibling.textContent.trim() : '';
+
+                                        // Si ya hay 4 tablas en la página, añadir nueva página
+                                        if (tablaContador >= 4) {
+                                            doc.addPage();
+                                            startY = 20;
+                                            agregarEncabezado();
+                                            tablaContador = 0; // Reiniciar contador de tablas por página
+                                        }
+
+                                        // Agregar título si existe
+                                        if (tableName) {
+                                            doc.setFontSize(14);
+                                            doc.text(tableName, 14, startY);
+                                            startY += 3; // Reducir espacio entre título y tabla
+                                        }
+
+                                        // Agregar tabla
+                                        doc.autoTable({
+                                            html: table,
+                                            startY: startY,
+                                            styles: {
+                                                fontSize: 10,
+                                                cellPadding: 3
+                                            },
+                                            headStyles: {
+                                                fillColor: [41, 128, 185],
+                                                textColor: 255,
+                                                fontSize: 11
+                                            },
+                                            bodyStyles: {
+                                                fontSize: 10
+                                            },
+                                            columnStyles: {
+                                                0: {
+                                                    cellWidth: 'auto'
+                                                }
+                                            },
+                                            theme: 'grid',
+                                            didDrawPage: function(data) {
+                                                startY = data.cursor.y + 10;
+                                            }
+                                        });
+
+                                        tablaContador++; // Incrementar el contador de tablas por página
+                                    });
+
+                                    doc.save('reporte_diario.pdf');
+                                });
+
+                            });
+                        </script>
                         <script>
                             // Smooth scroll to top
                             $(document).ready(function() {

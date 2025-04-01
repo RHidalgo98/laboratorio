@@ -134,28 +134,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $detallesCambio = [];
             
-            // Comparar cambios en cada campo
-            if(($registro['observacion'] ?? '') != $observacion) {
-                $detallesCambio[] = "Observación: " . ($registro['observacion'] ?? 'vacío') . " → " . ($observacion ?: 'vacío');
+            // Comparar cambios en cada campo y guardar solo si hay cambios
+            if($registro['hora'] !== $hora) {
+                $detallesCambio[] = "Hora: {$registro['hora']} -> $hora";
             }
-            if($registro['color'] != $color) {
-                $detallesCambio[] = "Color: {$registro['color']} → $color";
+            if(($registro['observacion'] ?? '') !== ($observacion ?? '')) {
+                $detallesCambio[] = "Observación: " . ($registro['observacion'] ?? '') . " -> " . ($observacion ?? '');
             }
-            if($registro['brix'] != $brix) {
-                $detallesCambio[] = "Brix: {$registro['brix']} → $brix";
+            if($registro['color'] !== $color) {
+                $detallesCambio[] = "Color: {$registro['color']} -> $color";
             }
-            if($registro['sac'] != $sac) {
-                $detallesCambio[] = "SAC: {$registro['sac']} → $sac";
+            if($registro['brix'] !== $brix) {
+                $detallesCambio[] = "Brix: {$registro['brix']} -> $brix";
             }
-            if($registro['mlGastado'] != $mlGastado) {
-                $detallesCambio[] = "ML Gastado: {$registro['mlGastado']} → $mlGastado";
+            if($registro['sac'] !== $sac) {
+                $detallesCambio[] = "SAC: {$registro['sac']} -> $sac";
+            }
+            if($registro['mlGastado'] !== $mlGastado) {
+                $detallesCambio[] = "ML Gastado: {$registro['mlGastado']} -> $mlGastado";
             }
             
             // Registrar solo si hubo cambios
             if(!empty($detallesCambio)) {
                 registrarBitacora(
                     $_SESSION['nombre'],
-                    "Actualización de registro en Meladura",
+                    "Edición de registro en Meladura",
                     $idMeladura,
                     "meladura",
                     implode(", ", $detallesCambio)
